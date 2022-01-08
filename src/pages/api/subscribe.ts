@@ -15,6 +15,7 @@ type User = {
 
 async function subscribe(req: NextApiRequest, res: NextApiResponse) {
   if(req.method === 'POST') {
+    console.log('pasouuuuuuuuuuuu')
     const session = await getSession({ req });
 
     if(!session || !session.user || !session.user.email) {
@@ -65,7 +66,7 @@ async function subscribe(req: NextApiRequest, res: NextApiResponse) {
         cancel_url: process.env.STRIPE_CANCEL_URL as string,
       });
 
-      return res.status(200).json({ sessionId: stripeCheckoutSession });
+      return res.status(200).json({ sessionId: stripeCheckoutSession.id });
     }
   } else {
     res.setHeader('Allow', 'POST');
