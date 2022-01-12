@@ -1,5 +1,6 @@
 import { GetStaticProps, NextPage } from 'next';
 import Head from 'next/head';
+import Link from 'next/link';
 import Prismic from '@prismicio/client'
 import { RichText } from 'prismic-dom'
 import { getPrismicClient } from '../../services/prismic';
@@ -7,7 +8,7 @@ import styles from './styles.module.scss';
 
 type Post = {
   slug: string;
-  tittle: string;
+  title: string;
   excerpte: string;
   updateAt: string;
 };
@@ -16,7 +17,7 @@ interface PostsProps {
   posts: Post[];
 };
 
-const Post: NextPage<PostsProps> = ({ posts }) => {
+const Posts: NextPage<PostsProps> = ({ posts }) => {
   return (
     <>
       <Head>
@@ -26,11 +27,13 @@ const Post: NextPage<PostsProps> = ({ posts }) => {
       <main className={styles.container}>
         <div className={styles.posts}>
           { posts.map(post => (
-            <a key={post.slug} href="">
-              <time>{post.updateAt}</time>
-              <strong>{post.tittle}</strong>
-              <p>{post.excerpte}</p>
-            </a>
+            <Link key={post.slug} href={`/posts/preview/${post.slug}`} >
+              <a>
+                <time>{post.updateAt}</time>
+                <strong>{post.title}</strong>
+                <p>{post.excerpte}</p>
+              </a>
+            </Link>
           ))}
         </div>
       </main>
@@ -38,7 +41,7 @@ const Post: NextPage<PostsProps> = ({ posts }) => {
   );
 }
 
-export default Post;
+export default Posts;
 
 export const getStaticProps: GetStaticProps = async () => {
   const prismic = getPrismicClient();
@@ -56,7 +59,7 @@ export const getStaticProps: GetStaticProps = async () => {
     posts = response.results.map((post: any) => {
       return {
         slug: post.uid,
-        tittle: RichText.asText(post.data.title),
+        title: RichText.asText(post.data.title),
         excerpte: post.data.content.find((content: any) => 
           content.type === 'paragraph')?.text ?? '',
         updateAt: new Date(post.last_publication_date).toLocaleDateString(
